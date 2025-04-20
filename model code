@@ -1,0 +1,96 @@
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+import sklearn as skl
+
+df=pd.read_csv('/content/Rootkit.csv')
+
+df.drop('Root kits ',inplace=True,axis=1)
+
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+
+# Initialize LabelEncoder
+label_encoder = LabelEncoder()
+
+# Apply label encoding to the specified columns
+for column in ['Root kit', 'classtestold', ' classtestnew']:
+    df[column] = label_encoder.fit_transform(df[column])
+
+# Display the resulting DataFrame
+print(df)
+
+# Select features and labels
+x = df.loc[:, 'A1':'A968']          # Features: Columns A1 to A968
+y1 = df['classtestold']             # Label 1: classtestold
+y2 = df[' classtestnew']             # Label 2: classtestnew (optional, for multi-label classification)
+
+x1_train,x1_test,y1_train,y1_test=train_test_split(x,y1,test_size=0.2,random_state=1234)
+x2_train,x2_test,y2_train,y2_test=train_test_split(x,y2,test_size=0.2,random_state=1234)
+
+lr=LogisticRegression()
+dtr=DecisionTreeClassifier()
+svm=SVC(gamma='auto')
+
+lr.fit(x1_train,y1_train.ravel())
+dtr.fit(x1_train,y1_train.ravel())
+svm.fit(x1_train,y1_train.ravel())
+
+print('Train Accuracy',lr.score(x1_train,y1_train))
+print('Test Accuracy:',lr.score(x1_test,y1_test))
+
+print(skl.metrics.classification_report(y1_test,lr.predict(x1_test),target_names = ['No Root kit', 'Root kit']))
+
+cm_lr=skl.metrics.confusion_matrix(y_true=y1_test,y_pred=lr.predict(x1_test))
+skl.metrics.ConfusionMatrixDisplay(cm_lr).plot()
+
+print('Train Accuracy',dtr.score(x1_train,y1_train))
+print('Test Accuracy:',dtr.score(x1_test,y1_test))
+
+print(skl.metrics.classification_report(y1_test,dtr.predict(x1_test),target_names = ['No Root kit', 'Root kit']))
+
+cm_dtr=skl.metrics.confusion_matrix(y_true=y1_test,y_pred=dtr.predict(x1_test))
+skl.metrics.ConfusionMatrixDisplay(cm_dtr).plot()
+
+print('Train Accuracy',svm.score(x1_train,y1_train))
+print('Test Accuracy:',svm.score(x1_test,y1_test))
+
+print(skl.metrics.classification_report(y1_test,svm.predict(x1_test),target_names = ['No Root kit', 'Root kit']))
+
+cm_svm=skl.metrics.confusion_matrix(y_true=y1_test,y_pred=svm.predict(x1_test))
+skl.metrics.ConfusionMatrixDisplay(cm_svm).plot()
+
+lr=LogisticRegression()
+dtr=DecisionTreeClassifier()
+svm=SVC(gamma='auto')
+
+lr.fit(x2_train,y2_train.ravel())
+dtr.fit(x2_train,y2_train.ravel())
+svm.fit(x2_train,y2_train.ravel())
+
+print('Train Accuracy',lr.score(x2_train,y2_train))
+print('Test Accuracy:',lr.score(x2_test,y2_test))
+
+print(skl.metrics.classification_report(y2_test,lr.predict(x2_test),target_names = ['Inline Hook', 'IAT Hook', 'SSDT Hook', 'RV (Rootkit Virtualization)']))
+
+cm_lr=skl.metrics.confusion_matrix(y_true=y2_test,y_pred=lr.predict(x2_test))
+skl.metrics.ConfusionMatrixDisplay(cm_lr).plot()
+
+print('Train Accuracy',dtr.score(x2_train,y2_train))
+print('Test Accuracy:',dtr.score(x2_test,y2_test))
+
+print(skl.metrics.classification_report(y2_test,dtr.predict(x2_test),target_names = [ 'Inline Hook', 'IAT Hook', 'SSDT Hook', 'RV (Rootkit Virtualization)']))
+
+cm_dtr=skl.metrics.confusion_matrix(y_true=y2_test,y_pred=dtr.predict(x2_test))
+skl.metrics.ConfusionMatrixDisplay(cm_dtr).plot()
+
+print('Train Accuracy',svm.score(x2_train,y2_train))
+print('Test Accuracy:',svm.score(x2_test,y2_test))
+
+cm_svm=skl.metrics.confusion_matrix(y_true=y2_test,y_pred=svm.predict(x2_test))
+skl.metrics.ConfusionMatrixDisplay(cm_svm).plot()
+
